@@ -1,4 +1,4 @@
-import { promoItems } from "@/data/promoItems";
+import { promoItems, PromoItem } from "@/data/promoItems";
 import React from "react";
 
 export default function PromosPage() {
@@ -19,6 +19,7 @@ export default function PromosPage() {
                         <th className="py-2 px-3">Strategy</th>
                         <th className="py-2 px-3">Profit/Loss</th>
                         <th className="py-2 px-3">Promo Price</th>
+                        <th className="py-2 px-3">Selling Price</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,10 +56,27 @@ export default function PromosPage() {
                                 ${(item.promoPrice - item.costPrice).toFixed(2)}
                             </td>
                             <td className="py-2 px-3">${item.promoPrice.toFixed(2)}</td>
+                            <td className="py-2 px-3">{calculateSellingPrice(item)}</td>
                         </tr>
                     ))}
                 </tbody>
             </table>
         </div>
     );
+}
+function calculateSellingPrice(item: PromoItem): string {
+    if (item.promoType.includes("Buy 2 Save")) {
+        const match = item.promoType.match(/Save (\d+)%/);
+        const percent = match ? parseInt(match[1]) : 0;
+        const total = item.regularPrice * 2;
+        const discount = (percent / 100) * total;
+        const final = total - discount;
+        return `$${final.toFixed(2)} for 2`;
+    } else if (item.promoType.startsWith("Clear Stock")) {
+        const parts = item.promoType.split("@ $");
+        if (parts.length === 2) {
+            return `$${parseFloat(parts[1]).toFixed(2)} each`;
+        }
+    }
+    return `$${item.regularPrice.toFixed(2)} each`;
 }
