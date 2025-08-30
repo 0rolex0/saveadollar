@@ -1,12 +1,11 @@
-import { promoItems, PromoItem } from "@/data/promoItems";
+import { expiredItems } from "@/data/expiredItems";
 import React from "react";
 
 
-export default function PromosPage() {
-
+export default function ExpiredItemsPage() {
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold mb-4">Promo Deals</h1>
+            <h1 className="text-2xl font-bold mb-4">Expiring Soon — Promo Action Needed</h1>
 
             <table className="w-full border text-sm text-left">
                 <thead className="bg-gray-100">
@@ -18,13 +17,12 @@ export default function PromosPage() {
                         <th className="py-2 px-3">Credit?</th>
                         <th className="py-2 px-3">Urgency</th>
                         <th className="py-2 px-3">Strategy</th>
-                        <th className="py-2 px-3">Profit/Loss</th>
-                        <th className="py-2 px-3">Promo Price</th>
+                        <th className="py-2 px-3">Promo Type</th>
                         <th className="py-2 px-3">Selling Price</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {promoItems.map((item, index) => (
+                    {expiredItems.map((item, index) => (
                         <tr key={index} className="border-t">
                             <td className="py-2 px-3">{item.product}</td>
                             <td className="py-2 px-3">{item.sku}</td>
@@ -48,15 +46,7 @@ export default function PromosPage() {
                                 {item.urgency}
                             </td>
                             <td className="py-2 px-3">{item.strategy}</td>
-                            <td
-                                className={`py-2 px-3 font-semibold ${item.promoPrice - item.costPrice >= 0
-                                    ? "text-green-600"
-                                    : "text-red-600"
-                                    }`}
-                            >
-                                ${(item.promoPrice - item.costPrice).toFixed(2)}
-                            </td>
-                            <td className="py-2 px-3">${item.promoPrice.toFixed(2)}</td>
+                            <td className="py-2 px-3">{item.promoType}</td>
                             <td className="py-2 px-3">{calculateSellingPrice(item)}</td>
                         </tr>
                     ))}
@@ -65,10 +55,10 @@ export default function PromosPage() {
         </div>
     );
 }
-function calculateSellingPrice(item: PromoItem): string {
+
+function calculateSellingPrice(item: any): string {
     if (item.promoType.includes("Buy 2 Save")) {
-        const match = item.promoType.match(/Save (\d+)%/);
-        const percent = match ? parseInt(match[1]) : 0;
+        const percent = parseInt(item.promoType.replace(/\D/g, ""));
         const total = item.regularPrice * 2;
         const discount = (percent / 100) * total;
         const final = total - discount;
