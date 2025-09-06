@@ -2,7 +2,9 @@
 module.exports = {
   content: [
     "./src/**/*.{js,ts,jsx,tsx}",
-    "./pages/**/*.{js,ts,jsx,tsx}"
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./src/lib/**/*.{js,ts,jsx,tsx}",
+
   ],
   theme: {
     extend: {},
