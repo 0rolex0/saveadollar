@@ -1,4 +1,20 @@
+
 export const expiredItems = [
+
+export type ExpiredItem = {
+  product: string;
+  sku: string;
+  expiry: string;
+  quantity: number;
+  credit: boolean;
+  urgency: "High" | "Medium" | "Low";
+  strategy: string;
+  promoType: string;
+  regularPrice: number;
+};
+
+export const expiredItems: ExpiredItem[] = [
+
   {
     product: "Snickers (Almond)",
     sku: "SNK-001",
@@ -8,6 +24,8 @@ export const expiredItems = [
     urgency: "High",
     strategy: "Clear soon — selling well, promo works",
     promoType: "Buy 2 Save 30%",
+    regularPrice: 1.49,
+
   },
   {
     product: "Mountain Dew 500ml",
@@ -18,6 +36,7 @@ export const expiredItems = [
     urgency: "Medium",
     strategy: "Non-returnable — recover cost before expiry",
     promoType: "Clear Stock @ $1.25",
+    regularPrice: 1.49,
   },
   {
     product: "Beef Jerky Teriyaki",
@@ -28,5 +47,7 @@ export const expiredItems = [
     urgency: "Low",
     strategy: "Monitor weekly — low risk, may sell out",
     promoType: "Watchlist",
+    regularPrice: 2.99,
+
   },
 ];

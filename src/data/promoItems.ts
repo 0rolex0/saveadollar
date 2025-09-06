@@ -40,3 +40,4 @@ export const promoItems: PromoItem[] = [
     regularPrice: 1.49,
   },
 ];
+];
