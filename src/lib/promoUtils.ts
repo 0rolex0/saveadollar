@@ -1,34 +1,33 @@
-import { ExpiredItem } from "@/data/expiredItems";
-import { PromoItem } from "@/data/promoItems";
-import { suggestPromo, PromoSuggestion } from "@/lib/suggestPromo";
+import { PromoItem, Product } from "@prisma/client"
 
-export function generatePromoItem(item: ExpiredItem): PromoItem {
-  const promoSuggestion: PromoSuggestion = suggestPromo(item);  // ✅ Now typed correctly
-
-  let promoPrice = item.regularPrice;
-
-  if (promoSuggestion.promoType.includes("Buy 2 Save")) {
-    const percentMatch = promoSuggestion.promoType.match(/Save (\d+)%/);
-    const percent = percentMatch ? parseInt(percentMatch[1]) : 0;
-    const total = item.regularPrice * 2;
-    const discount = (percent / 100) * total;
-    promoPrice = (total - discount) / 2; // price per unit
-  } else if (promoSuggestion.promoType.startsWith("Clear Stock")) {
-    const match = promoSuggestion.promoType.match(/@ \$(\d+(\.\d+)?)/);
-    promoPrice = match ? parseFloat(match[1]) : item.regularPrice;
-  }
+export function generatePromoItem(item: {
+  id: string
+  product: Product
+  costPrice: number
+  quantity: number
+  credit: boolean
+  expiry: Date
+  storeId?: string | null  // optional field
+}): PromoItem {
+  const promoPrice = item.credit
+    ? item.costPrice + 1.0
+    : item.costPrice
 
   return {
-    product: item.product,
-    sku: item.sku,
+    id: crypto.randomUUID(),
+    product: item.product.id,
+    sku: item.product.sku,
+    costPrice: item.costPrice,
+    regularPrice: item.product.defaultPrice,
+    promoPrice,
+    credit: item.credit,
     expiry: item.expiry,
     quantity: item.quantity,
-    credit: item.credit,
-    urgency: item.urgency,
-    strategy: promoSuggestion.strategy,
-    promoPrice,
-    costPrice: item.credit ? 0.65 : 1.0, // fallback, replace with actual later
-    promoType: promoSuggestion.promoType,
-    regularPrice: item.regularPrice,
-  };
+    urgency: "Medium",
+    strategy: item.credit ? "Small Profit" : "Recover Cost",
+    promoType: "Buy 2 Get 1",
+    storeId: item.storeId ?? null, // ✅ fixes the error
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
 }

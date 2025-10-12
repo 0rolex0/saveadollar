@@ -1,13 +1,14 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from "next";
+// src/pages/api/hello.ts
 
-type Data = {
-  name: string;
-};
+import type { NextApiRequest, NextApiResponse } from "next";
+import { startPromoCronJob } from "@/jobs/generatePromos"; // ✅ Make sure this file exports the function
+
+// ⏰ Start the cron when server boots
+startPromoCronJob();
 
 export default function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>,
+  res: NextApiResponse
 ) {
-  res.status(200).json({ name: "John Doe" });
+  res.status(200).json({ message: "Hello from promo cron!" });
 }

@@ -2,30 +2,80 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Root theme colors and font variables */
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-
-  /* Fallbacks added */
-  --font-sans: var(--font-geist-sans, sans-serif);
-  --font-mono: var(--font-geist-mono, monospace);
-}
-
-/* Dark mode overrides */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Promo floating from ~30% to ~70% (based on viewport center logic) */
+@keyframes center-float {
+  0% {
+    transform: translateX(-50%) translateX(-30%);
+    opacity: 0;
+  }
+  10% {
+    transform: translateX(-50%) translateX(0%);
+    opacity: 1;
+  }
+  70% {
+    transform: translateX(-50%) translateX(0%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) translateX(30%);
+    opacity: 0;
   }
 }
 
-/* Apply to body */
+.animate-center-float {
+  animation: center-float 4s ease-in-out;
+  white-space: nowrap;
+}
+@keyframes logo-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px #facc15);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px #facc15);
+  }
+}
+.animate-logo-glow {
+  animation: logo-glow 2s ease-in-out infinite;
+}
+@keyframes car-drive {
+  0% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+  30% {
+    opacity: 1;
+    transform: translateX(100px) scale(1.05);
+  }
+  60% {
+    transform: translateX(300px) scale(1.1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateX(500px) scale(1);
+    opacity: 0;
+  }
+}
+@import "@fontsource/major-mono-display"; /* Fuel pump style */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans, Arial, Helvetica, sans-serif);
+  font-family: 'Inter', sans-serif;
+}
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+/* styles/globals.css */
+@keyframes blue-glow {
+  0% {
+    box-shadow: 0 -2px 6px rgba(59, 130, 246, 0.4); /* Tailwind blue-500 */
+  }
+  50% {
+    box-shadow: 0 -3px 12px rgba(59, 130, 246, 0.8);
+  }
+  100% {
+    box-shadow: 0 -2px 6px rgba(59, 130, 246, 0.4);
+  }
+}
+
+.animate-blue-glow {
+  animation: blue-glow 2.5s infinite ease-in-out;
 }

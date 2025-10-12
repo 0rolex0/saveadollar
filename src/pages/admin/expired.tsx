@@ -1,59 +1,72 @@
 import { expiredItems, ExpiredItem } from "@/data/expiredItems";
+import AdminShell from "@/components/admin/AdminShell";
+import Link from "next/link";
 import React from "react";
 
 export default function ExpiredItemsPage() {
     return (
-        <div className="p-6">
-            <h1 className="text-2xl font-bold mb-4">Expiring Soon — Promo Action Needed</h1>
+        <AdminShell>
+            <div className="p-6">
+                {/* Back Button */}
+                <div className="flex items-center justify-between mb-6">
+                    <h1 className="text-2xl font-bold text-gray-800">Expiring Soon — Promo Action Needed</h1>
+                </div>
 
-            <table className="w-full border border-gray-300 text-sm text-left">
-                <thead className="bg-gray-100 border-b border-gray-300">
-                    <tr>
-                        <th className="py-2 px-3">Product</th>
-                        <th className="py-2 px-3">SKU</th>
-                        <th className="py-2 px-3">Expiry</th>
-                        <th className="py-2 px-3">Qty</th>
-                        <th className="py-2 px-3">Credit?</th>
-                        <th className="py-2 px-3">Urgency</th>
-                        <th className="py-2 px-3">Strategy</th>
-                        <th className="py-2 px-3">Promo Type</th>
-                        <th className="py-2 px-3">Selling Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {expiredItems.map((item, index) => (
-                        <tr key={index} className="border-t border-gray-200">
-                            <td className="py-2 px-3">{item.product}</td>
-                            <td className="py-2 px-3">{item.sku}</td>
-                            <td className="py-2 px-3">
-                                {new Date(item.expiry).toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                    year: "numeric",
-                                })}
-                            </td>
-                            <td className="py-2 px-3">{item.quantity}</td>
-                            <td className={`py-2 px-3 font-semibold ${item.credit ? "text-green-600" : "text-red-600"}`}>
-                                {item.credit ? "✅ Yes" : "❌ No"}
-                            </td>
-                            <td
-                                className={`py-2 px-3 font-semibold ${item.urgency === "High"
-                                    ? "text-red-600"
-                                    : item.urgency === "Medium"
-                                        ? "text-yellow-600"
-                                        : "text-green-600"
-                                    }`}
-                            >
-                                {item.urgency}
-                            </td>
-                            <td className="py-2 px-3">{item.strategy}</td>
-                            <td className="py-2 px-3">{item.promoType}</td>
-                            <td className="py-2 px-3">{calculateSellingPrice(item)}</td>
+                {/* Table */}
+                <table className="w-full border border-gray-300 text-sm text-left">
+                    <thead className="bg-gray-100 border-b border-gray-300">
+                        <tr>
+                            <th className="py-2 px-3">Product</th>
+                            <th className="py-2 px-3">SKU</th>
+                            <th className="py-2 px-3">Expiry</th>
+                            <th className="py-2 px-3">Qty</th>
+                            <th className="py-2 px-3">Credit?</th>
+                            <th className="py-2 px-3">Urgency</th>
+                            <th className="py-2 px-3">Strategy</th>
+                            <th className="py-2 px-3">Promo Type</th>
+                            <th className="py-2 px-3">Selling Price</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        {expiredItems.map((item, index) => (
+                            <tr key={index} className="border-t border-gray-200 hover:bg-gray-50">
+                                <td className="py-2 px-3">{item.product}</td>
+                                <td className="py-2 px-3">{item.sku}</td>
+                                <td className="py-2 px-3">
+                                    {new Date(item.expiry).toLocaleDateString("en-US", {
+                                        month: "short",
+                                        day: "numeric",
+                                        year: "numeric",
+                                    })}
+                                </td>
+                                <td className="py-2 px-3">{item.quantity}</td>
+                                <td
+                                    className={`py-2 px-3 font-semibold ${item.credit
+                                        ? "text-green-600"
+                                        : "text-red-600"
+                                        }`}
+                                >
+                                    {item.credit ? "✅ Yes" : "❌ No"}
+                                </td>
+                                <td
+                                    className={`py-2 px-3 font-semibold ${item.urgency === "High"
+                                        ? "text-red-600"
+                                        : item.urgency === "Medium"
+                                            ? "text-yellow-600"
+                                            : "text-green-600"
+                                        }`}
+                                >
+                                    {item.urgency}
+                                </td>
+                                <td className="py-2 px-3">{item.strategy}</td>
+                                <td className="py-2 px-3">{item.promoType}</td>
+                                <td className="py-2 px-3">{calculateSellingPrice(item)}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </AdminShell>
     );
 }
 

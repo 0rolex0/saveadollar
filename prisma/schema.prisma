@@ -8,35 +8,77 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Store {
+  id        String   @id @default(cuid())
+  name      String
+  location  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users      User[]
+  inventory  LiveInventory[]
+  expired    ExpiredItem[]
+  promoItems PromoItem[]
+  gasPrices  GasPrice[]
+}
+
+model User {
+  id       String  @id @default(cuid())
+  email    String  @unique
+  name     String
+  password String
+  role     Role
+  storeId  String?
+  store    Store?  @relation(fields: [storeId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  OWNER
+  MANAGER
+  CASHIER
+  EMPLOYEE
+}
+
 model Product {
-  id           String  @id @default(cuid())
-  name         String
-  sku          String  @unique
-  category     String?
-  brand        String?
-  defaultCost  Float?
-  defaultPrice Float?
-  returnable   Boolean
+  id             String   @id @default(cuid())
+  name           String
+  sku            String   @unique
+  category       String
+  brand          String
+  quantityPerBox Int      // ✅ Fixed quantity per box/case (e.g., 12 bars, 24 bottles)
+  defaultCost    Float
+  defaultPrice   Float
+  returnable     Boolean
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  inventory LiveInventory[] // existing relation
-  expired   ExpiredItem[] // 👈 add this line for the relation
+  // Relations
+  inventory    LiveInventory[]
+  expiredItems ExpiredItem[]
 }
-
 model LiveInventory {
-  id        String  @id @default(cuid())
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
+  id           String   @id @default(cuid())
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id])
 
-  expiry    DateTime
-  quantity  Int
-  costPrice Float
-  credit    Boolean // for *this batch* – overrides product-level default
-
-  deliveryDate DateTime
   storeId      String?
+  store        Store?   @relation(fields: [storeId], references: [id])
+
+  expiry       DateTime
+  quantity     Int
+  costPrice    Float
+  retailPrice  Float       // ✅ store’s actual sale price (live)
+  credit       Boolean
+  deliveryDate DateTime
+
+  // 🧠 Useful for analytics and automation
+  lastSoldAt   DateTime?   // ✅ optional — helps detect dead stock or trends
+  reorderFlag  Boolean?    // ✅ optional — AI/autoreorder flag
+  notes        String?     // ✅ optional — comments like “pending return” or “damaged”
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -55,8 +97,11 @@ model PromoItem {
   promoPrice   Float
   costPrice    Float
   regularPrice Float
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  storeId      String? // optional foreign key
+  store        Store?   @relation(fields: [storeId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ExpiredItem {
@@ -67,5 +112,86 @@ model ExpiredItem {
   expiry    DateTime
   credit    Boolean
   removedAt DateTime @default(now())
+
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id])
+}
+
+model GasPrice {
+  id        String   @id @default(cuid())
+  name      String
+  type      String // e.g., "Regular", "Plus", "Premium", "Diesel"
+  priceCard Float // Card price
+  priceCash Float // Cash price
   storeId   String
+  store     Store    @relation(fields: [storeId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+// 🗑 Logs all deleted inventory items
+model DeletedInventory {
+  id              String   @id @default(cuid())
+  liveItemId      String?  // ID from LiveInventory
+  productId       String?
+  productName     String?
+  sku             String?
+  quantity        Int?
+  costPrice       Float?
+  retailPrice     Float?
+  credit          Boolean?
+  storeId         String?
+  deliveryDate    DateTime? // original delivery date
+  expiryDate      DateTime? // original expiry date
+  reason          String?   // optional: "manual delete", "duplicate", etc.
+  deletedBy       String?   // user who deleted it
+  deletedAt       DateTime  @default(now())
+}
+
+// ✏️ Logs all manual updates to inventory items
+model InventoryUpdate {
+  id              String   @id @default(cuid())
+  liveItemId      String?
+  productId       String?
+  productName     String?
+  sku             String?
+  oldQuantity     Int?
+  newQuantity     Int?
+  oldCostPrice    Float?
+  newCostPrice    Float?
+  oldRetailPrice  Float?
+  newRetailPrice  Float?
+  oldDeliveryDate DateTime?
+  newDeliveryDate DateTime?
+  oldExpiryDate   DateTime?
+  newExpiryDate   DateTime?
+  creditChanged   Boolean?
+  storeId         String?
+  updatedBy       String?
+  updatedAt       DateTime  @default(now())
+}
+
+model PromoUpdate {
+  id         String   @id @default(cuid())
+  promoId    String
+  oldData    String
+  newData    String
+  updatedBy  String
+  createdAt  DateTime @default(now())
+}
+
+model DeletedPromo {
+  id           String   @id @default(cuid())
+  promoId      String
+  product      String
+  sku          String
+  expiry       DateTime
+  quantity     Int
+  costPrice    Float
+  retailPrice  Float
+  promoPrice   Float
+  credit       Boolean
+  storeId      String?
+  reason       String
+  deletedBy    String
+  deletedAt    DateTime @default(now())
 }
