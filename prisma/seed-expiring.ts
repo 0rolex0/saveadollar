@@ -22,6 +22,7 @@ async function seed() {
       defaultCost: 1.0,
       defaultPrice: 1.5,
       returnable: true,
+      quantityPerBox: 12, // ✅ required field added
     },
   });
 
@@ -37,6 +38,7 @@ async function seed() {
         expiry: expirySoon,
         quantity: 10,
         costPrice: 1.0,
+        retailPrice: 1.5, // ✅ required field added
         credit: true,
         deliveryDate: today,
         storeId: store.id,
@@ -46,6 +48,7 @@ async function seed() {
         expiry: expirySoon,
         quantity: 5,
         costPrice: 1.0,
+        retailPrice: 1.5, // ✅ required field added
         credit: false,
         deliveryDate: today,
         storeId: store.id,
@@ -53,7 +56,13 @@ async function seed() {
     ],
   });
 
-  console.log("✅ Store, Product, and Expiring Inventory seeded.");
+  console.log("✅ Store, Product, and Expiring Inventory seeded successfully.");
 }
 
-seed().finally(() => prisma.$disconnect());
+seed()
+  .catch((err) => {
+    console.error("❌ Seeding failed:", err);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
