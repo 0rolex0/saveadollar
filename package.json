@@ -8,7 +8,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "ts-node prisma/seed.ts",
+    "db:prod:push": "npx prisma db push",
+    "db:staging:push": "DATABASE_URL=$(grep DATABASE_URL .env.staging | cut -d '\"' -f2) npx prisma db push",
+    "db:seed:prod": "npx prisma db seed",
+    "db:seed:staging": "DATABASE_URL=$(grep DATABASE_URL .env.staging | cut -d '\"' -f2) npx prisma db seed",
+    "db:push:prod": "npx prisma db push",
+    "db:push:staging": "DATABASE_URL=$(grep DATABASE_URL .env.staging | cut -d '\"' -f2) npx prisma db push"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
