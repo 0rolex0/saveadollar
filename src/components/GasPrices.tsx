@@ -3,7 +3,6 @@ import Image from "next/image";
 import axios from "axios";
 import { FaCarSide } from "react-icons/fa";
 import { HiCalendar } from "react-icons/hi";
-import Promotions from "./Promotions";
 import PromoSlider from "./PromoSlider";
 
 interface GasPrice {
